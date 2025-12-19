@@ -4,7 +4,7 @@ import redis.asyncio as redis
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import insert
 from database import AsyncSessionLocal
-import models
+import model.models as models
 from config.config import BROKER_URL, QUEUE_NAME, logger
 from initial_state import stats
 

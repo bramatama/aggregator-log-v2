@@ -8,8 +8,8 @@ from sqlalchemy import select, func
 import redis.asyncio as redis
 from contextlib import asynccontextmanager
 from database import engine, Base, get_db
-import models
-import schemas
+import model.models as models
+import model.schemas as schemas
 from config.config import BROKER_URL, QUEUE_NAME, logger
 from initial_state import stats
 from worker.worker import consume_events
@@ -30,7 +30,7 @@ async def init_db(retries=5, delay=3):
         except (OSError, OperationalError) as e:
             logger.warning(f"Database belum siap. Retrying in {delay}s... Error: {e}")
             await asyncio.sleep(delay)
-    raise RuntimeError("Gagal konek ke database.")
+    raise RuntimeError("Gagal tersambung ke database.")
 
 # --- LIFECYCLE ---
 @asynccontextmanager

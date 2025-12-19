@@ -7,7 +7,7 @@ services:
     volumes:
       - broker_data:/data
     networks:
-      - backend-net
+      - backend-local-network
 
   storage:
     image: postgres:16-alpine
@@ -17,9 +17,9 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=events_db
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     networks:
-      - backend-net
+      - backend-local-network
 
   aggregator:
       build: ./aggregator
@@ -33,7 +33,7 @@ services:
       ports:
         - "8080:8080"
       networks:
-        - backend-net
+        - backend-local-network
 
   publisher:
     build: ./publisher
@@ -46,21 +46,23 @@ services:
       - DUPLICATION_RATE=0.3
       - MAX_EVENTS=20000
     networks:
-      - backend-net
+      - backend-local-network
 
   test_case:
     build: ./tests
     container_name: test_case
     depends_on:
       - aggregator
+    environment:
+      - BASE_URL=http://aggregator:8080
     networks:
-      - backend-net
+      - backend-local-network
     profiles: ["testing"]
 
 networks:
-  backend-net:
+  backend-local-network:
     driver: bridge
 
 volumes:
-  pg_data:
+  postgres_data:
   broker_data:

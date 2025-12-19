@@ -52,8 +52,6 @@ def check_responsiveness():
         responsive_check_passed = False
 
 def run_publisher():    
-    time.sleep(5)
-    
     # --- Persiapan Data (Pre-generation) ---
     num_unique = int(MAX_EVENTS * (1 - DUPLICATION_RATE))
     num_duplicates = MAX_EVENTS - num_unique
@@ -70,6 +68,8 @@ def run_publisher():
     
     print(f"Total event disiapkan: {len(all_events_to_send)}")
 
+    time.sleep(5)
+    
     # --- Cek Stats Awal ---
     try:
         stats_before = requests.get(STATS_URL).json().get("uptime_stats", {})

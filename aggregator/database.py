@@ -1,6 +1,6 @@
 import os
+from sqlalchemy.orm import  declarative_base, sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://user:password@storage:5432/events_db")
 
