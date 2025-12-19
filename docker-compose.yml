@@ -1,0 +1,66 @@
+services:
+  broker:
+    image: redis:7-alpine
+    container_name: broker
+    ports:
+      - "6379:6379" 
+    volumes:
+      - broker_data:/data
+    networks:
+      - backend-net
+
+  storage:
+    image: postgres:16-alpine
+    container_name: storage
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=events_db
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - backend-net
+
+  aggregator:
+      build: ./aggregator
+      container_name: aggregator
+      depends_on:
+        - broker
+        - storage
+      environment:
+        - DATABASE_URL=postgresql+asyncpg://user:password@storage:5432/events_db
+        - BROKER_URL=redis://broker:6379/0
+      ports:
+        - "8080:8080"
+      networks:
+        - backend-net
+
+  publisher:
+    build: ./publisher
+    container_name: publisher
+    depends_on:
+      - aggregator
+    environment:
+      - TARGET_URL=http://aggregator:8080/publish
+      - DELAY=0
+      - DUPLICATION_RATE=0.3
+      - MAX_EVENTS=20000
+    networks:
+      - backend-net
+
+  test_case:
+    build: ./tests
+    container_name: test_case
+    depends_on:
+      - aggregator
+    networks:
+      - backend-net
+    profiles: ["testing"]
+
+networks:
+  backend-net:
+    driver: bridge
+
+volumes:
+  pg_data:
+  broker_data:

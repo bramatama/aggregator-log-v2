@@ -1,0 +1,11 @@
+requests
+fastapi
+uvicorn
+redis
+sqlalchemy
+asyncpg
+psycopg2-binary
+redis
+pytest
+pytest-asyncio
+httpx
